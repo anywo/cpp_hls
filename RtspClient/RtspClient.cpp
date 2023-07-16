@@ -1,7 +1,7 @@
 #include "RtspClient.h"
 #include <iostream>
 #include <sstream>
-#include <WS2tcpip.h>
+// #include <WS2tcpip.h>
 #include <vector>
 #include "SdpParse.h"
 #include "RTCPUnpacket.h"
@@ -445,7 +445,7 @@ unsigned int RtspClient::HandleCmdData(int newBytesRead)
 			{
 				sessionID = resp.headers["Session"];
 			}
-			if (!resp.headers["Transport"].empty())//»ñÈ¡ssrc
+			if (!resp.headers["Transport"].empty())//ï¿½ï¿½È¡ssrc
 			{
 				std::stringstream ss(resp.headers["Transport"]);
 				std::string item;

@@ -1,12 +1,13 @@
 #include "RTCPUnpacket.h"
-#include <Windows.h>
+// #include <Windows.h>
 #include "RtpUnpacket.h"
+#include <fstream>
+#include <unistd.h>
 
 RTCPUnpacket::RTCPUnpacket(RtpUnpacket* _rtp) :rtp(_rtp)
 {
-	DWORD sz;
 	char computerName[64];
-	GetComputerNameA(computerName, &sz);
+	gethostname(computerName, 64);
 	
 	//header(4)+ssrc(4)+type(1)+length(1)+text(...)+type(end)
 	sdec_len = 4 + (4 + 1 + 1 + sz + 1 + 3) / 4 * 4;
@@ -221,8 +222,8 @@ unsigned long long RTCPUnpacket::rtpclock()
 unsigned long long RTCPUnpacket::ntpclock(unsigned long long clock)
 {
 	unsigned long long ntp;
-	ntp = ((clock / 1000) + 0x83AA7E80) << 32;//¸ß32Î» 1900/1/1 µ½ÏÖÔÚµÄÃëÊý
-	//µÍ32Î» Î¢ÃëÊýµÄ4294.967296(=2^32/10^6)±¶
+	ntp = ((clock / 1000) + 0x83AA7E80) << 32;//ï¿½ï¿½32Î» 1900/1/1 ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½32Î» Î¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½4294.967296(=2^32/10^6)ï¿½ï¿½
 	// low 32 bits in picosecond
 	// ms * 2^32 / 10^3
 	// 10^6 = 2^6 * 15625

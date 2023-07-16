@@ -1,5 +1,6 @@
 #include "Base64.h"
 #include <mutex>
+#include <cstring>
 
 std::once_flag Base64::m_flag;
 

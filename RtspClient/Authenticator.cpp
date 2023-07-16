@@ -31,7 +31,7 @@ std::string Authenticator::createAuthenticatorString(char const* cmd, char const
 		{
 			char buf[1024];
 			auto response = computeDigestResponse(cmd, url);
-			sprintf_s(buf, "Authorization: Digest username=\"%s\", realm=\"%s\", "
+			sprintf(buf, "Authorization: Digest username=\"%s\", realm=\"%s\", "
 				"nonce=\"%s\", uri=\"%s\", response=\"%s\"\r\n",
 				fUserName.c_str(), fRealm.c_str(), fNonce.c_str(), url, response.c_str());
 			authStr = buf;
@@ -43,7 +43,7 @@ std::string Authenticator::createAuthenticatorString(char const* cmd, char const
 			usernamePassword.append(":");
 			usernamePassword.append(fPassword);
 		
-			auto response = WinUtility::Base64Encode((BYTE*)usernamePassword.c_str(), usernamePassword.size());
+			auto response = WinUtility::Base64Encode((uint8_t*)usernamePassword.c_str(), usernamePassword.size());
 			response.append("\r\n");
 			authStr.append("Authorization: Basic ");
 			authStr.append(response);
@@ -72,8 +72,8 @@ std::string Authenticator::computeDigestResponse(char const* cmd, char const* ur
 	ha2.append(":");
 	ha2.append(url);
 
-	auto data1 = WinUtility::MD5Encode((BYTE*)ha1.c_str(), ha1.size());
-	auto data2 = WinUtility::MD5Encode((BYTE*)ha2.c_str(), ha2.size());
+	auto data1 = WinUtility::MD5Encode((uint8_t*)ha1.c_str(), ha1.size());
+	auto data2 = WinUtility::MD5Encode((uint8_t*)ha2.c_str(), ha2.size());
 
 	ha3.append(data1);
 	ha3.append(":");
@@ -81,5 +81,5 @@ std::string Authenticator::computeDigestResponse(char const* cmd, char const* ur
 	ha3.append(":");
 	ha3.append(data2);
 
-	return  WinUtility::MD5Encode((BYTE*)ha3.c_str(), ha3.size());
+	return  WinUtility::MD5Encode((uint8_t*)ha3.c_str(), ha3.size());
 }

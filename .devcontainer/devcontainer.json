@@ -1,0 +1,11 @@
+{
+	"name": "gcc9-cmake",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"dockerComposeFile": "/home/anywo/workspace/devcontainers/cmake/gcc9-cmake/docker-compose.yaml",
+  "service": "dev",
+  "workspaceFolder": "/root/u/workspace/cpp_hls",
+  "extensions": [
+	"twxs.cmake",
+	"ms-vscode.cmake-tools"
+  ]
+}

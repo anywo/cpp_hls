@@ -2,36 +2,41 @@
 
 FLVClient::FLVClient() :newClient(true)
 {
-	InitializeCriticalSection(&m_queueLock);
-	InitializeConditionVariable(&m_queueCondition);
+	pthread_mutex_init(&m_queueLock, NULL);
+	// InitializeConditionVariable(&m_queueCondition);
 }
 
 FLVClient::~FLVClient()
 {
-	DeleteCriticalSection(&m_queueLock);
+	pthread_mutex_destroy(&m_queueLock);
 }
 
 void  FLVClient::HasNewFLVTag(const std::basic_string<std::uint8_t>& data)
 {
-	EnterCriticalSection(&m_queueLock);
+	pthread_mutex_lock(&m_queueLock);
 	tagQueue.push(data);
-	LeaveCriticalSection(&m_queueLock);
+	pthread_mutex_unlock(&m_queueLock);
 
-	WakeConditionVariable(&m_queueCondition);
+	pthread_cond_broadcast(&m_queueCondition);
 }
 
 std::basic_string<std::uint8_t> FLVClient::GetTagData()
 {
 	std::basic_string<std::uint8_t> s;
-	EnterCriticalSection(&m_queueLock);
+	pthread_mutex_lock(&m_queueLock);
 	if (tagQueue.empty())
-		SleepConditionVariableCS(&m_queueCondition, &m_queueLock, 2000);
+	{
+		struct timespec timeout;
+		clock_gettime(CLOCK_REALTIME, &timeout);
+		timeout.tv_sec += 2; // 设置等待超时时间为2秒
+		pthread_cond_timedwait(&m_queueCondition, &m_queueLock, &timeout);
+	}
 
 	if (!tagQueue.empty())
 	{
 		s = tagQueue.front();
 		tagQueue.pop();
 	}
-	LeaveCriticalSection(&m_queueLock);
+	pthread_mutex_unlock(&m_queueLock);
 	return s;
 }

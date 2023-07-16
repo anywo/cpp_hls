@@ -1,5 +1,11 @@
 #pragma once
-#include <WinSock2.h>
+// #include <WinSock2.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/uio.h>
+#include <stdint.h>
+
 #include "Authenticator.h"
 #include <map>
 #include <future>
@@ -44,7 +50,7 @@ private:
 	unsigned int HandleCmdData(int newBytesRead);
 	unsigned int HandleRtpData();
 
-	int PostRecv(WSABUF* buf, DWORD* flags);
+	int PostRecv(iovec* buf, uint32_t* flags);
 
 private:
 	std::string m_currentCmd;
@@ -71,10 +77,10 @@ private:
 
 	RtpUnpacket* rtp;
 	RTCPUnpacket* rtcp;
-	WSAOVERLAPPED overlapped;
-	HANDLE rtcpReportEvent;
+	epoll_event overlapped;
+	int rtcpReportEvent;
 private:
-	SOCKET m_cli;
+	int m_cli;
 	std::future<unsigned int> m_dataHandleFuture;
 	std::future<unsigned> m_rtcpFuture;
 };

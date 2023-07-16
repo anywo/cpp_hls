@@ -1,5 +1,6 @@
 #include "RtpUnpacket.h"
 #include <iostream>
+#include <cstring>
 
 RtpUnpacket::RtpUnpacket() : naluType(0),
 pUsr(nullptr), m_cb(nullptr),
@@ -38,7 +39,7 @@ int RtpUnpacket::InputRtpData(unsigned char* data, unsigned short sz, const std:
 
 		if (m_videoCodec == "H264")
 			ParseAVCRTP(data + 12, sz - 12, timeStamp, mark == 0 ? false : true);
-		else if (_strcmpi(m_videoCodec.c_str(), "H265") == 0)
+		else if (strcasecmp(m_videoCodec.c_str(), "H265") == 0)
 			ParseHEVCRTP(data + 12, sz - 12, timeStamp, mark == 0 ? false : true);
 	}
 	else if (type == "audio")
@@ -50,7 +51,7 @@ int RtpUnpacket::InputRtpData(unsigned char* data, unsigned short sz, const std:
 
 		if (m_audioCodec == "PCMU" || m_audioCodec == "PCMA")
 			ParseG711RTP(data + 12, sz - 12, timeStamp, mark == 0 ? false : true);
-		else if (_strcmpi(m_audioCodec.c_str(), "MPEG4-GENERIC") == 0)
+		else if (strcasecmp(m_audioCodec.c_str(), "MPEG4-GENERIC") == 0)
 			ParseAACRTP(data + 12, sz - 12, timeStamp, mark == 0 ? false : true);
 		else
 		{
@@ -234,7 +235,7 @@ int RtpUnpacket::ParseAACRTP(unsigned char* data, unsigned short sz, unsigned in
 			int len = sz - 4 + 7;
 			//                                     4     len 5      6 
 			ADTS[4] = (len & 0xfff8) >> 3;//00 1111 1111 111 1 1111 1111 1100
-			ADTS[5] = (len << 5) | 0x1F;//µÍÈýÎ»
+			ADTS[5] = (len << 5) | 0x1F;//ï¿½ï¿½ï¿½ï¿½Î»
 
 			if (data[0] != 0x00 && data[1] != 0x10)
 				std::cerr << "not a correct aac stream" << std::endl;
